@@ -155,6 +155,26 @@ class Product {
       throw new Error('Failed to fetch products with images');
     }
   }
+
+  // productsController.js (or Product model file)
+
+static async getProductsByCategory(category_id) {
+  const query = `
+    SELECT p.*, i.image_url, c.name AS category_name
+FROM Products p
+LEFT JOIN Images i ON p.product_id = i.product_id AND i.is_primary = true
+LEFT JOIN Categories c ON p.category_id = c.category_id
+WHERE p.category_id = ?
+
+  `;
+  try {
+    const [results] = await pool.query(query, [category_id]);
+    return results;
+  } catch (err) {
+    throw new Error('Error fetching products by category: ' + err.message);
+  }
+}
+
 }
 
 module.exports = Product;

@@ -854,7 +854,26 @@ const getProductsBySeason = async (req, res) => {
   } catch (error) {
     handleError(res, 'Failed to fetch products by season', error);
   }
+  // Controller to get products by category
 };
+// ✅ Controller to get products by category
+const getProductsByCategory = async (req, res) => {
+  const { category_id } = req.params;
+
+  try {
+    const products = await Product.getProductsByCategory(category_id);
+
+    if (products.length > 0) {
+      res.status(200).json(products);
+    } else {
+      res.status(404).json({ message: 'No products found for this category' });
+    }
+  } catch (error) {
+    console.error("❌ Error fetching products by category:", error);
+    res.status(500).json({ message: 'Failed to fetch products. Please try again later.' });
+  }
+};
+
 
 module.exports = {
   getAllProducts,
@@ -862,7 +881,8 @@ module.exports = {
   addProduct,
   updateProduct,
   deleteProduct,
-  getProductsBySeason
+  getProductsBySeason,
+  getProductsByCategory
 };
 
 
