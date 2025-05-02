@@ -9,20 +9,20 @@ const {
   getAllProducts, 
   getProductById, 
   updateProduct, 
-  deleteProduct 
+  deleteProduct,
+  getProductsBySeason
 } = require('../controllers/productController');
-const { protect, authorizeCustomer,authorizeAdmin, } = require('../middlewares/authMiddleware');
-const upload = require('../config/multer'); // Ensure path is correct
+const { authenticate, authorizeAdmin } = require('../middlewares/authMiddleware');
  // ✅ Using your existing multer setup that stores in memory
-
+ const upload = require('../config/multer');
 const router = express.Router();
 
 // ✅ Allow multiple image upload
-
-router.get('/', protect, authorizeCustomer,getAllProducts);
-router.get('/:product_id', protect, authorizeCustomer,getProductById);
-router.post('/create', authorizeAdmin, upload.array('images'), addProduct);
-router.put('/:product_id', authorizeAdmin, upload.array('images'), updateProduct);
-router.delete('/:product_id', authorizeAdmin, deleteProduct);
+router.get('/season/:season_id', getProductsBySeason);
+router.get('/',  getAllProducts);
+router.get('/:product_id', getProductById);
+router.post('/create',authenticate, authorizeAdmin, upload.array('images'), addProduct);
+router.put('/:product_id', authenticate, authorizeAdmin, upload.array('images'), updateProduct);
+router.delete('/:product_id', authenticate, authorizeAdmin, deleteProduct);
 
 module.exports = router;

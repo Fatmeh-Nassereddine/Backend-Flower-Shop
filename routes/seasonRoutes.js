@@ -1,11 +1,9 @@
 // routes/seasonRoutes.js
 const express = require('express');
 const router = express.Router();
-const { protect ,authorizeCustomer,authorizeAdmin, } = require('../middlewares/authMiddleware'); // Import middleware
+const { authenticate, authorizeAdmin } = require('../middlewares/authMiddleware'); // Import middleware
 const {
   createSeason,
-  getAllSeasons,
-  getSeasonById,
   updateSeason,
   deleteSeason,
   viewAllSeasons,
@@ -14,14 +12,12 @@ const {
 
 
 // Customer Routes
-router.get('/seasons', protect, authorizeCustomer, viewAllSeasons);  // Customer can view all seasons
-router.get('/seasons/:id', protect, authorizeCustomer, viewSeasonById);  // Customer can view a specific season
+router.get('/',  viewAllSeasons);  // Customer can view all seasons
+router.get('/:id',  viewSeasonById);  // Customer can view a specific season
 // Admin Routes
-router.post('/', authorizeAdmin, createSeason);  // Admin can create a season
-router.get('/', authorizeAdmin, getAllSeasons);  // Admin can get all seasons
-router.get('/:id', authorizeAdmin, getSeasonById);  // Admin can get season by ID
-router.put('/:id', authorizeAdmin, updateSeason);  // Admin can update a season
-router.delete('/:id', authorizeAdmin, deleteSeason);  // Admin can delete a season
+router.post('/', authenticate,authorizeAdmin, createSeason);  // Admin can create a season
+router.put('/:id', authenticate,authorizeAdmin, updateSeason);  // Admin can update a season
+router.delete('/:id', authenticate,authorizeAdmin, deleteSeason);  // Admin can delete a season
 
 
 

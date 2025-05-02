@@ -1,48 +1,89 @@
 
 
 
-const Shipping = require('../models/shipping');
+const Shipping = require('../models/shipping'); // Import the Shipping model
 
-// Get delivery fee (assumes only one or first record matters)
-exports.getDeliveryFee = async (req, res) => {
+// Create a new shipping record
+exports.createShipping = async (req, res) => {
+  const { delivery_fee, order_id } = req.body;
+
+  if (!delivery_fee || !order_id) {
+    return res.status(400).json({ error: 'Delivery fee and order ID are required' });
+  }
+
   try {
-    const shippings = await Shipping.getAll();
-    if (shippings.length === 0) {
-      return res.status(404).json({ error: 'No shipping fee set' });
-    }
-
-    res.json({ delivery_fee: shippings[0].delivery_fee });
+    const shippingId = await Shipping.create({ delivery_fee, order_id });
+    res.status(201).json({ message: 'Shipping record created successfully', shippingId });
   } catch (error) {
-    res.status(500).json({ error: 'Server error', details: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Update or insert delivery fee
-exports.updateDeliveryFee = async (req, res) => {
+// Get all shipping records
+exports.getAllShippings = async (req, res) => {
   try {
-    if (!req.user || req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Access denied! Admins only.' });
-    }
-
-    const { delivery_fee } = req.body;
-    if (delivery_fee == null) {
-      return res.status(400).json({ error: 'Delivery fee is required' });
-    }
-
     const shippings = await Shipping.getAll();
-
-    if (shippings.length === 0) {
-      await Shipping.create({ delivery_fee, order_id: null });
-    } else {
-      await Shipping.update(shippings[0].id, {
-        delivery_fee,
-        order_id: shippings[0].order_id,
-      });
-    }
-
-    res.json({ message: 'Delivery fee updated successfully', delivery_fee });
+    res.status(200).json(shippings);
   } catch (error) {
-    res.status(500).json({ error: 'Server error', details: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
+
+// Get a shipping record by ID
+exports.getShippingById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const shipping = await Shipping.getById(id);
+
+    if (!shipping) {
+      return res.status(404).json({ message: 'Shipping record not found' });
+    }
+
+    res.status(200).json(shipping);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update a shipping record
+exports.updateShipping = async (req, res) => {
+  const { id } = req.params;
+  const { delivery_fee, order_id } = req.body;
+
+  if (!delivery_fee && !order_id) {
+    return res.status(400).json({ error: 'At least one field (delivery_fee or order_id) is required to update' });
+  }
+
+  try {
+    const updated = await Shipping.update(id, { delivery_fee, order_id });
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Shipping record not found' });
+    }
+
+    res.status(200).json({ message: 'Shipping record updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Delete a shipping record
+exports.deleteShipping = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deleted = await Shipping.delete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: 'Shipping record not found' });
+    }
+
+    res.status(200).json({ message: 'Shipping record deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
 

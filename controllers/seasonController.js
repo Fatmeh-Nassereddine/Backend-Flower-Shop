@@ -26,32 +26,6 @@ exports.createSeason = async (req, res) => {
 };
 
 // Admin: Get all seasons
-exports.getAllSeasons = async (req, res) => {
-  try {
-    const seasons = await Season.findAll();
-    res.status(200).json(seasons);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-// Admin: Get a season by ID
-exports.getSeasonById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const season = await Season.findById(id);
-
-    if (!season) {
-      return res.status(404).json({ message: 'Season not found' });
-    }
-
-    res.status(200).json(season);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
 
 // Admin: Update a season
 exports.updateSeason = async (req, res) => {
@@ -100,11 +74,16 @@ exports.deleteSeason = async (req, res) => {
 // Customer: Get all seasons
 exports.viewAllSeasons = async (req, res) => {
   try {
-    const seasons = await Season.findAll();
+    const query = `
+      SELECT season_id AS id, name
+      FROM Seasons
+      ORDER BY name
+    `;
+    const [seasons] = await pool.query(query);
     res.status(200).json(seasons);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error });
+    console.error('Error fetching seasons:', error);
+    res.status(500).json({ message: 'Failed to fetch seasons' });
   }
 };
 

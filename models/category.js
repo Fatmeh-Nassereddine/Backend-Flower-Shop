@@ -64,6 +64,14 @@ class Category {
       throw new Error('Error deleting category: ' + err.message);
     }
   }
+
+  // find category
+  static async findAll() {
+    const query = `SELECT c.*, i.image_url FROM Categories c LEFT JOIN Images i ON c.category_id = i.category_id AND i.is_primary = true`;
+    const [results] = await pool.query(query);
+    return results;
+  }
+  
 }
 
 module.exports = Category;

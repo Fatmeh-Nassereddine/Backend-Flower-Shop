@@ -176,6 +176,7 @@ exports.getUserCart = async (req, res) => {
 
     res.json({ cart_id: cart.cart_id, items, total });
   } catch (err) {
+    console.error("Error fetching user cart: ", err.message);  // Log error
     res.status(500).json({ error: err.message });
   }
 };
@@ -187,6 +188,7 @@ exports.addOrUpdateProduct = async (req, res) => {
     await CartItem.addOrUpdateItem(cart.cart_id, product_id, quantity);
     res.json({ message: 'Product added/updated in cart' });
   } catch (err) {
+    console.error("Error adding/updating product in cart: ", err.message);  // Log error
     res.status(500).json({ error: err.message });
   }
 };
@@ -200,6 +202,7 @@ exports.updateItemQuantity = async (req, res) => {
       res.status(404).json({ error: 'Item not found' });
     }
   } catch (err) {
+    console.error("Error updating item quantity: ", err.message);  // Log error
     res.status(500).json({ error: err.message });
   }
 };
@@ -213,6 +216,7 @@ exports.removeItemFromCart = async (req, res) => {
       res.status(404).json({ error: 'Item not found' });
     }
   } catch (err) {
+    console.error("Error removing item from cart: ", err.message);  // Log error
     res.status(500).json({ error: err.message });
   }
 };
@@ -225,6 +229,7 @@ exports.clearUserCart = async (req, res) => {
     await CartItem.clearCart(cart.cart_id);
     res.json({ message: 'Cart cleared' });
   } catch (err) {
+    console.error("Error clearing cart: ", err.message);  // Log error
     res.status(500).json({ error: err.message });
   }
 };

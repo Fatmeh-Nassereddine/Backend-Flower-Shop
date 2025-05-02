@@ -107,7 +107,54 @@ class Product {
       throw new Error('Failed to update product stock: ' + error.message);
     }
   }
-  
+  static async getProductsWithImages() {
+    try {
+      const query = `
+        SELECT 
+          p.*, 
+          i.image_id, i.image_url, i.public_id, i.is_primary
+        FROM Products p
+        LEFT JOIN Images i ON p.product_id = i.product_id
+      `;
+      const [rows] = await pool.query(query);
+
+      // Group products with images
+      const productsMap = new Map();
+
+      for (const row of rows) {
+        const {
+          product_id,
+          image_id,
+          image_url,
+          public_id,
+          is_primary,
+          ...productData
+        } = row;
+
+        if (!productsMap.has(product_id)) {
+          productsMap.set(product_id, {
+            product_id,
+            ...productData,
+            images: []
+          });
+        }
+
+        if (image_id) {
+          productsMap.get(product_id).images.push({
+            image_id,
+            image_url,
+            public_id,
+            is_primary
+          });
+        }
+      }
+
+      return Array.from(productsMap.values());
+    } catch (error) {
+      console.error('❌ Error fetching products with images:', error);
+      throw new Error('Failed to fetch products with images');
+    }
+  }
 }
 
 module.exports = Product;

@@ -64,19 +64,24 @@ const uploadMiddleware = upload.single('image'); // Centralized upload middlewar
 // Get All Categories
 const getAllCategories = async (req, res) => {
     try {
-        const query = `
-            SELECT c.*, i.image_url
-            FROM Categories c
-            LEFT JOIN Images i ON c.category_id = i.category_id AND i.is_primary = true
-            ORDER BY c.name
-        `;
-        const [categories] = await pool.query(query);
-        res.status(200).json(categories);
+      const query = `
+        SELECT 
+          c.category_id AS id, 
+          c.name, 
+          i.image_url
+        FROM Categories c
+        LEFT JOIN Images i 
+          ON c.category_id = i.category_id AND i.is_primary = true
+        ORDER BY c.name
+      `;
+      const [categories] = await pool.query(query);
+      res.status(200).json(categories);
     } catch (err) {
-        console.error('Error fetching categories:', err);
-        res.status(500).json({ message: 'Failed to fetch categories' });
+      console.error("Error fetching categories:", err);
+      res.status(500).json({ message: "Failed to fetch categories" });
     }
-};
+  };
+  
 
 // Get Category by ID
 const getCategoryById = async (req, res) => {

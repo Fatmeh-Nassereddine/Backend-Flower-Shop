@@ -9,21 +9,21 @@ const {
   updateUserById
 } = require('../controllers/userController');
 
-const { protect, authorizeCustomer,authorizeAdmin } = require('../middlewares/authMiddleware');
 
+const { authenticate,authorizeAdmin } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
 
 
 // Authenticated user routes
-router.get('/me', protect, authorizeCustomer,getMe);
-router.put('/me', protect, authorizeCustomer,updateUser); // More RESTful than /update
+router.get('/me', authenticate,getMe);
+router.put('/me', authenticate,updateUser); // More RESTful than /update
 
 // Admin routes
-router.get('/', protect, authorizeAdmin, getAllUsers);
-router.get('/:id', protect, authorizeAdmin, getUserById);
-router.put('/:id', protect, authorizeAdmin, updateUserById);
-router.delete('/:id', protect, authorizeAdmin, deleteUser);
+router.get('/', authenticate, authorizeAdmin, getAllUsers);
+router.get('/:id', authenticate, authorizeAdmin, getUserById);
+router.put('/:id', authenticate, authorizeAdmin, updateUserById);
+router.delete('/:id',authenticate, authorizeAdmin, deleteUser);
 
 module.exports = router;
 
