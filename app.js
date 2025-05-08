@@ -19,12 +19,23 @@ const app = express();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ CORS configuration
-const corsOptions = {
-  origin: "https://frontend-flower-shop.vercel.app",// Allow your frontend's domain
-  credentials: true, // Allow cookies to be sent
-};
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://frontend-flower-shop.vercel.app"
+];
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,  // Allow cookies and authentication headers
+}));
 
 // ✅ Security, Logging, Parsing
 app.use(helmet());
