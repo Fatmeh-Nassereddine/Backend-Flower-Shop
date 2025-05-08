@@ -19,21 +19,12 @@ const app = express();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ CORS configuration
-const allowedOrigins = [
-  'http://localhost:3000', 
-  
-];
+const corsOptions = {
+  origin: 'http://localhost:3000',// Allow your frontend's domain
+  credentials: true, // Allow cookies to be sent
+};
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+app.use(cors(corsOptions));
 
 // ✅ Security, Logging, Parsing
 app.use(helmet());
@@ -56,9 +47,10 @@ const contactRoutes = require('./routes/contactRoutes');
 const addressRoutes = require('./routes/addressRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const authRoutes = require('./routes/authRoutes');
+const testimonialRoutes = require('./routes/testimonialRoutes');
 
 app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -69,6 +61,7 @@ app.use('/api/shippings', shippingRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/address', addressRoutes); 
 app.use('/api/favorites', favoriteRoutes);
+app.use('/api/testimonial',testimonialRoutes);
 
 // ✅ Global Error Handler
 const errorMiddleware = require('./middlewares/error.middleware');

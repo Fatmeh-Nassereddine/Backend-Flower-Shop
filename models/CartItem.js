@@ -22,15 +22,23 @@ class CartItem {
 
   static async getItems(cart_id) {
     const [rows] = await pool.execute(
-      `SELECT ci.cart_item_id, ci.product_id, p.name AS product_name, p.price, ci.quantity,
-              (p.price * ci.quantity) AS subtotal
+      `SELECT 
+          ci.cart_item_id, 
+          ci.product_id, 
+          p.name AS product_name, 
+          p.price AS product_price, 
+          ci.quantity,
+          (p.price * ci.quantity) AS subtotal,
+          i.image_url AS product_image
        FROM CartItems ci
        JOIN Products p ON ci.product_id = p.product_id
+       LEFT JOIN Images i ON i.product_id = p.product_id AND i.is_primary = 1
        WHERE ci.cart_id = ?`,
       [cart_id]
     );
     return rows;
   }
+  
 
   static async updateQuantity(cart_item_id, quantity) {
     const [result] = await pool.execute(

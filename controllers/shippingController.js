@@ -2,7 +2,7 @@
 
 
 const Shipping = require('../models/shipping'); // Import the Shipping model
-
+const ShippingOption = require('../models/shippingOption');
 // Create a new shipping record
 exports.createShipping = async (req, res) => {
   const { delivery_fee, order_id } = req.body;
@@ -86,4 +86,11 @@ exports.deleteShipping = async (req, res) => {
 };
 
 
-
+exports.getShippingOptions = async (req, res) => {
+  try {
+    const options = await ShippingOption.getAll();
+    res.status(200).json(options);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

@@ -204,6 +204,7 @@ exports.login = asyncHandler(async (req, res) => {
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     maxAge: 24 * 60 * 60 * 1000,
+    path: '/', // Ensure cookie is accessible across all route
   });
 
   delete user.password;
@@ -222,6 +223,7 @@ exports.logout = asyncHandler(async (req, res) => {
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     expires: new Date(0),
+    path: '/',
   });
 
   res.status(200).json({ message: 'Logout successful!' });
@@ -229,9 +231,17 @@ exports.logout = asyncHandler(async (req, res) => {
 
 // ✅ VERIFY USER
 exports.verifyUser = asyncHandler(async (req, res) => {
-  res.status(200).json({
-    id: req.user.id,
-    email: req.user.email,
-    role: req.user.role,
-  });
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user) return res.status(401).json({ error: 'User not found' });
+
+    res.status(200).json({ id: user.id, name: user.name, email: user.email, role: user.role });
+  } catch (err) {
+    console.error('Verification error:', err);
+    res.status(401).json({ error: 'Invalid or expired token' });
+  }
 });

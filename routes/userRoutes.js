@@ -17,10 +17,10 @@ const router = express.Router();
 
 // Authenticated user routes
 router.get('/me', authenticate,getMe);
-router.put('/me', authenticate,updateUser); // More RESTful than /update
+router.put('/update', authenticate,updateUser); // More RESTful than /update
 
 // Admin routes
-router.get('/', authenticate, authorizeAdmin, getAllUsers);
+router.get('/all', authenticate, authorizeAdmin, getAllUsers);
 router.get('/:id', authenticate, authorizeAdmin, getUserById);
 router.put('/:id', authenticate, authorizeAdmin, updateUserById);
 router.delete('/:id',authenticate, authorizeAdmin, deleteUser);

@@ -68,6 +68,7 @@ const User = require('../models/user');
 
 // ✅ Auth middleware
 const authenticate = async (req, res, next) => {
+  console.log("Authenticating...");
   try {
     const token = req.cookies.token;
 
@@ -76,6 +77,7 @@ const authenticate = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || '');
+    console.log('Decoded JWT:', decoded); 
     const user = await User.findById(decoded.userId);
 
     if (!user) {
@@ -88,9 +90,11 @@ const authenticate = async (req, res, next) => {
       name: user.name,
       email: user.email,
     };
+    console.log('Authenticated user:', req.user); // Log the user object for debugging
 
     next();
   } catch (err) {
+    console.error('Authentication error:', err);
     return res.status(401).json({ message: 'Invalid or expired token' });
   }
 };

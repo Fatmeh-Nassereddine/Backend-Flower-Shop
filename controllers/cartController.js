@@ -168,18 +168,32 @@ const CartItem = require('../models/CartItem');
 
 exports.getUserCart = async (req, res) => {
   try {
-    const cart = await Cart.getCartByUser(req.params.user_id);
-    if (!cart) return res.json({ items: [], total: 0 });
+    const user_id = parseInt(req.params.user_id, 10);
+    if (isNaN(user_id)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    let cart = await Cart.getCartByUser(user_id);
+
+    if (!cart) {
+      const newCart = await Cart.createCart(user_id);
+      return res.json({ cart_id: newCart.cart_id, items: [], total: 0 });
+    }
 
     const items = await CartItem.getItems(cart.cart_id);
-    const total = items.reduce((acc, item) => acc + item.subtotal, 0);
+    const total = items.reduce((acc, item) => acc + (item.subtotal || 0), 0);
+    res.json({ 
+      success: true,  // 👈 Add this
+      cart_id: cart.cart_id, 
+      items, 
+      total });
 
-    res.json({ cart_id: cart.cart_id, items, total });
   } catch (err) {
-    console.error("Error fetching user cart: ", err.message);  // Log error
+    console.error("Error fetching user cart: ", err.message);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 exports.addOrUpdateProduct = async (req, res) => {
   const { user_id, product_id, quantity } = req.body;

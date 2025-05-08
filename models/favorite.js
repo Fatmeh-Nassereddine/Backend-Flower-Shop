@@ -6,34 +6,43 @@ class Favorite {
   }
 
   // Get all favorites for the current user
-  async getFavorites() {
-    try {
-      const [rows] = await pool.execute(
-        `SELECT f.id, f.product_id, p.name, p.price, p.image
-         FROM favorites f
-         JOIN products p ON f.product_id = p.id
-         WHERE f.user_id = ?`,
-        [this.userId]
-      );
-      return rows; // Returns the list of favorites
-    } catch (error) {
-      throw new Error('Error fetching favorites: ' + error.message);
-    }
+  // models/favorite.js
+
+async getFavorites() {
+  try {
+    console.log('🔍 Fetching favorites for user ID:', this.userId);
+
+    const [rows] = await pool.execute(
+      `SELECT f.id, f.product_id, p.name, p.price, i.image_url
+       FROM Favorites f
+       JOIN Products p ON f.product_id = p.product_id
+       LEFT JOIN Images i ON p.product_id = i.product_id AND i.is_primary = true
+       WHERE f.user_id = ?`,
+      [this.userId]
+    );
+
+    console.log('✅ Fetched favorite products:', rows);
+    return rows;
+  } catch (error) {
+    console.error('❌ DB Error in getFavorites:', error);
+    throw new Error('Error fetching favorites: ' + error.message);
   }
+}
+
 
   // Add a product to the favorites list for the current user
   async addFavorite(productId) {
     try {
       // Check if the favorite already exists
       const [exists] = await pool.execute(
-        `SELECT * FROM favorites WHERE user_id = ? AND product_id = ?`,
+        `SELECT * FROM Favorites WHERE user_id = ? AND product_id = ?`,
         [this.userId, productId]
       );
 
       // If the favorite does not exist, insert it
       if (exists.length === 0) {
-        await db.execute(
-          `INSERT INTO favorites (user_id, product_id) VALUES (?, ?)`,
+        await pool.execute(
+          `INSERT INTO Favorites (user_id, product_id) VALUES (?, ?)`,
           [this.userId, productId]
         );
       }
@@ -48,7 +57,7 @@ class Favorite {
   async removeFavorite(productId) {
     try {
       await pool.execute(
-        `DELETE FROM favorites WHERE user_id = ? AND product_id = ?`,
+        `DELETE FROM Favorites WHERE user_id = ? AND product_id = ?`,
         [this.userId, productId]
       );
       return { message: 'Removed from favorites' };

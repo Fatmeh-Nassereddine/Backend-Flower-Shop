@@ -1,18 +1,17 @@
 
 
 
-
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 const asyncHandler = require('express-async-handler');
-const User = require('../models/user'); // Assuming you saved the fixed User model there
 
+// Validation helpers
 const validateEmail = (email) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 const validatePassword = (password) => /^(?=.*[A-Z])(?=.*\d).{6,}$/.test(password);
 const hashPassword = (password) => password ? bcrypt.hashSync(password, 10) : null;
 
+// Function to update user fields
 const updateUserFields = async (userId, { name, email, newPassword, address, role }) => {
   const [rows] = await pool.execute('SELECT * FROM Users WHERE id = ?', [userId]);
   const user = rows[0];
@@ -51,13 +50,24 @@ const updateUserFields = async (userId, { name, email, newPassword, address, rol
   };
 };
 
-
-
 // Get current user
 exports.getMe = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id);
-  if (!user) return res.status(404).json({ error: 'User not found' });
-  res.status(200).json({ user });
+  try {
+    if (!req.user || !req.user.id) {
+      return res.status(400).json({ error: 'User ID not found in the request' });
+    }
+
+    const [rows] = await pool.execute('SELECT * FROM Users WHERE id = ?', [req.user.id]);
+    const user = rows[0];
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ user });
+  } catch (err) {
+    console.error('Error in getMe:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // Update current user
@@ -68,11 +78,11 @@ exports.updateUser = asyncHandler(async (req, res) => {
 
 // Admin: Get user by ID
 exports.getUserById = asyncHandler(async (req, res) => {
-  if (req.user.role !== 'admin')
-    return res.status(403).json({ error: 'Admins only!' });
-
-  const user = await User.findById(req.params.id);
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  const [rows] = await pool.execute('SELECT * FROM Users WHERE id = ?', [req.params.id]);
+  const user = rows[0];
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
 
   res.status(200).json({ user });
 });
@@ -85,8 +95,8 @@ exports.updateUserById = asyncHandler(async (req, res) => {
 
 // Admin: Get all users
 exports.getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.findAll();
-  res.status(200).json({ users });
+  const [rows] = await pool.execute('SELECT * FROM Users');
+  res.status(200).json({ users: rows });
 });
 
 // Admin: Delete user by ID
