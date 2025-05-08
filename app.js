@@ -20,7 +20,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ CORS configuration
 const corsOptions = {
-  origin: 'http://localhost:3000',// Allow your frontend's domain
+  origin: "https://frontend-flower-shop.vercel.app",// Allow your frontend's domain
   credentials: true, // Allow cookies to be sent
 };
 
