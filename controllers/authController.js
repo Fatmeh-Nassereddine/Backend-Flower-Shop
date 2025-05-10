@@ -200,7 +200,7 @@ exports.login = asyncHandler(async (req, res) => {
   );
 
   res.cookie('token', token, {
-    httpOnly: true,
+    httpOnly: false,  // so I can use cookies js in front /otherwise it should be true because of https
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     maxAge: 24 * 60 * 60 * 1000,

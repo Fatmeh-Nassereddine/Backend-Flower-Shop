@@ -31,7 +31,7 @@ router.post('/register', register);
 router.post('/login', login);
 
 // 📌 Logout (authenticated, but technically can be hit without error)
-router.post('/logout', logout);
+router.post('/logout', authenticate, logout);
 
 // 🔒 Verify token (authenticated)
 router.get('/verify', authenticate,verifyUser);

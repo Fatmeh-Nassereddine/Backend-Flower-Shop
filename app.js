@@ -18,24 +18,28 @@ const app = express();
 // ✅ Static folder for uploads (images, files, etc.)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ✅ CORS configuration
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://frontend-flower-shop.vercel.app"
-];
+// ✅ Correct CORS Configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or Postman)
     if (!origin) return callback(null, true);
+
+    // Check if the origin is in the allowed list
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
+      console.error(`Blocked by CORS: Origin (${origin}) is not allowed.`);
       return callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,  // Allow cookies and authentication headers
 }));
+
+// Explicitly handle the OPTIONS preflight request
+app.options('*', cors());
+
 
 // ✅ Security, Logging, Parsing
 app.use(helmet());
