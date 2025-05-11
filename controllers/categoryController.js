@@ -68,6 +68,7 @@ const getAllCategories = async (req, res) => {
         SELECT 
           c.category_id AS id, 
           c.name, 
+          c.description,
           i.image_url
         FROM Categories c
         LEFT JOIN Images i 
