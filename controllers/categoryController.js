@@ -76,6 +76,7 @@ const getAllCategories = async (req, res) => {
         ORDER BY c.name
       `;
       const [categories] = await pool.query(query);
+      console.log(categories);
       res.status(200).json(categories);
     } catch (err) {
       console.error("Error fetching categories:", err);
