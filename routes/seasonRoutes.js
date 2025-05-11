@@ -13,11 +13,14 @@ const {
 
 // Customer Routes
 router.get('/',  viewAllSeasons);  // Customer can view all seasons
-router.get('/:id',  viewSeasonById);  // Customer can view a specific season
+router.get('/:season_id', viewSeasonById);  // Get a specific season by season_id (public access)
+
 // Admin Routes
-router.post('/', authenticate,authorizeAdmin, createSeason);  // Admin can create a season
-router.put('/:id', authenticate,authorizeAdmin, updateSeason);  // Admin can update a season
-router.delete('/:id', authenticate,authorizeAdmin, deleteSeason);  // Admin can delete a season
+router.post('/', authenticate, authorizeAdmin, createSeason);  // Create a new season
+router.put('/:season_id', authenticate, authorizeAdmin, updateSeason);  // Update a season by season_id
+router.delete('/:season_id', authenticate, authorizeAdmin, deleteSeason);  // Delete a season by season_id
+
+module.exports = router;
 
 
 

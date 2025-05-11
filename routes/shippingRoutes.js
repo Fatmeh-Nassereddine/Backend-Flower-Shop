@@ -11,13 +11,13 @@ router.get('/shipping-options', authenticate, getShippingOptions);
 // Get all shipping records (public route, no authentication required)
 router.get('/',authenticate, authorizeAdmin,getAllShippings);
 
-// Get a specific shipping record by ID (accessible to all authenticated users)
-router.get('/:id', authenticate, getShippingById);
+// ✅ Get a specific shipping record by ID (authenticated users)
+router.get('/:shipping_id', authenticate, getShippingById);
 
-// Update a shipping record by ID (only accessible to admin users)
-router.put('/:id', authenticate, authorizeAdmin, updateShipping);
+// ✅ Update a shipping record by ID (admin only)
+router.put('/:shipping_id', authenticate, authorizeAdmin, updateShipping);
 
-// Delete a shipping record by ID (only accessible to admin users)
-router.delete('/:id', authenticate, authorizeAdmin, deleteShipping);
+// ✅ Delete a shipping record by ID (admin only)
+router.delete('/:shipping_id', authenticate, authorizeAdmin, deleteShipping);
 
 module.exports = router;

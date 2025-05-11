@@ -54,14 +54,14 @@ exports.getAllContacts = async (req, res) => {
 // ========== Delete Contact Submission (Admin Use) ==========
 exports.deleteContact = async (req, res) => {
   try {
-    const { id } = req.params;
+    const {contact_id  } = req.params;
 
-    const contactData = await Contact.findById(id); // Use the static findById method
+    const contactData = await Contact.findById(contact_id); // Use the static findById method
     if (!contactData) {
       return res.status(404).json({ error: 'Contact entry not found.' });
     }
 
-    await Contact.delete(id); // Use the static delete method
+    await Contact.delete(contact_id); // Use the static delete method
 
     res.status(200).json({ message: 'Contact entry deleted successfully.' });
   } catch (error) {

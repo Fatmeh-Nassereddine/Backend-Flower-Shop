@@ -6,9 +6,9 @@ const { authenticate } = require('../middlewares/authMiddleware');
 
 router.post('/', authenticate, createAddress);
 router.get('/', authenticate,  getUserAddresses);
-router.get('/:id', authenticate, getAddressById);
-router.put('/:id', authenticate,  updateAddress);
-router.delete('/:id', authenticate,  deleteAddress);
+router.get('/:address_id', authenticate, getAddressById);
+router.put('/:address_id', authenticate, updateAddress);
+router.delete('/:address_id', authenticate, deleteAddress);
 
 
 module.exports = router;

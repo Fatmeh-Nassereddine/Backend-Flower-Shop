@@ -15,7 +15,7 @@ router.get("/all",authenticate, authorizeAdmin,getAllContacts);
 
 
 // Route to delete a contact (for admin)
-router.delete("/:id", authenticate,authorizeAdmin, deleteContact);
+router.delete("/:contact_id", authenticate, authorizeAdmin, deleteContact);
 
   
 
