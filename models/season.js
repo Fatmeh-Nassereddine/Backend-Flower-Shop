@@ -6,16 +6,26 @@ class Season {
   // Method to create a new season
   static async create(season) {
     const { season_id, name, start_date, end_date } = season;
+    console.log("Season data before insert:", { season_id, name, start_date, end_date });
+  
+    // Ensure start_date and end_date are correctly set
+    const finalStartDate = start_date || new Date();  // Default to current date if start_date is undefined
+    const finalEndDate = end_date !== undefined ? end_date : null;  // Default to null if end_date is undefined
+  
+    console.log("Final data to insert:", { season_id, name, finalStartDate, finalEndDate });
+  
     try {
       const [result] = await pool.execute(
         'INSERT INTO Seasons (season_id, name, start_date, end_date) VALUES (?, ?, ?, ?)',
-        [season_id, name, start_date || new Date(), end_date || null]
+        [season_id, name, finalStartDate, finalEndDate]
       );
       return result;
     } catch (error) {
+      console.error("Error while creating season:", error);
       throw new Error('Error while creating season: ' + error.message);
     }
   }
+  
 
   // Method to get all seasons
   static async findAll() {

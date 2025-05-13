@@ -34,6 +34,21 @@ class Testimonial {
       throw error;
     }
   }
+  static async deleteTestimonial(id) {
+    try {
+      const [result] = await pool.query(
+        'DELETE FROM Testimonials WHERE id = ?',
+        [id]
+      );
+      if (result.affectedRows === 0) {
+        throw new Error('Testimonial not found');
+      }
+      return { success: true };
+    } catch (error) {
+      console.error('❌ Error deleting testimonial:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = Testimonial;

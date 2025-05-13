@@ -3,8 +3,9 @@ const router = express.Router();
 const {
   getTestimonials,
   createTestimonial,
+  deleteTestimonial,
 } = require('../controllers/testimonialController');
-const { authenticate} = require('../middlewares/authMiddleware');
+const { authenticate, authorizeAdmin} = require('../middlewares/authMiddleware');
 
 
 
@@ -13,5 +14,6 @@ router.get('/', getTestimonials);
 
 // Protected route (assuming auth middleware sets req.user)
 router.post('/', authenticate, createTestimonial);
+router.delete('/:id', authenticate, authorizeAdmin, deleteTestimonial);
 
 module.exports = router;

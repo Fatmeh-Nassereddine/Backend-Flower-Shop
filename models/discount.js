@@ -1,45 +1,4 @@
-// const { DataTypes } = require('sequelize');
-// const sequelize = require('../config/db');
 
-// const Discount = sequelize.define('Discount', {
-//   discount_id: {
-//     type: DataTypes.STRING,
-//     primaryKey: true,
-//     allowNull: false,
-//   },
-//   code: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   description: {
-//     type: DataTypes.STRING,
-//   },
-//   discount_type: {
-//     type: DataTypes.STRING,
-//     allowNull: false,
-//   },
-//   amount: {
-//     type: DataTypes.DECIMAL(10, 2),
-//     allowNull: false,
-//   },
-//   start_date: {
-//     type: DataTypes.DATE,
-//   },
-//   end_date: {
-//     type: DataTypes.DATE,
-//   },
-//   max_uses: {
-//     type: DataTypes.INTEGER,
-//   },
-//   current_uses: {
-//     type: DataTypes.INTEGER,
-//   },
-// }, {
-//   tableName: 'Discounts',
-//   timestamps: false,
-// });
-
-// module.exports = Discount;
 
 const pool = require('../config/db');
 

@@ -72,7 +72,9 @@ exports.viewAllSeasons = async (req, res) => {
     const seasons = await Season.findAll();  // Use model, not raw query
     res.status(200).json(seasons.map(s => ({
       id: s.season_id,
-      name: s.name
+      name: s.name,
+      start_date: s.start_date.toISOString(),  // Convert start_date to ISO string format
+      end_date: s.end_date.toISOString()       // Convert end_date to ISO string format
     })));
   } catch (error) {
     console.error('Error fetching seasons:', error);
