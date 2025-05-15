@@ -8,14 +8,33 @@ exports.createShipping = async (req, res) => {
   const { delivery_fee, order_id } = req.body;
 
   if (!delivery_fee || !order_id) {
-    return res.status(400).json({ error: 'Delivery fee and order ID are required' });
+    return res.status(400).json({ 
+      success: false,
+      error: 'Delivery fee and order ID are required',
+      details: { received: { delivery_fee, order_id } }
+    });
   }
 
   try {
     const shippingId = await Shipping.create({ delivery_fee, order_id });
-    res.status(201).json({ message: 'Shipping record created successfully', shippingId });
+    
+    if (!shippingId) {
+      throw new Error('Failed to get shipping ID from database');
+    }
+
+    res.status(201).json({ 
+      success: true,
+      message: 'Shipping record created successfully', 
+      shippingId 
+    });
+    
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Shipping creation error:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to create shipping record',
+      details: error.message 
+    });
   }
 };
 

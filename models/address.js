@@ -15,6 +15,7 @@ class Address {
                 'INSERT INTO Addresses (address_id, street_address, city, governorate, phone_number, user_id) VALUES (?, ?, ?, ?, ?, ?)',  // Add a placeholder for user_id
                 [address_id, street_address, city, governorate, phone_number, user_id]  // Make sure to pass all values
             );
+            console.log(result);
             return result;
         } catch (error) {
             throw new Error('Error while creating address: ' + error.message);

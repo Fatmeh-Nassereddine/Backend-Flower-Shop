@@ -9,16 +9,15 @@ exports.createAddress = async (req, res) => {
         }
 
         const result = await Address.create({ street_address, city, governorate, phone_number, user_id });
-        
       // Ensure result includes insertId (assuming MySQL or similar)
       if (result) {
         console.log('Address created, insertId:', result.insertId); // Log the insertId
-        return res.status(201).json({ message: 'Address created successfully', insertId: result.insertId });
+        return res.status(201).json({ message: `Address created successfully, ${result}`, insertId: result.insertId });
       } else {
         return res.status(500).json({ error: 'Failed to create address' });
       }
     } catch (error) {
-        console.log('Error: Address creation failed', result); // Log the failure response
+        console.log('Error: Address creation failed', error); // Log the failure response
       return res.status(500).json({ error: 'Something went wrong while creating the address' });
     }
   };

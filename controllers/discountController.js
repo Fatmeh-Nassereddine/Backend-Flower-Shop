@@ -52,14 +52,27 @@ const createDiscount = async (req, res) => {
 // ========== Get All Active Discounts ==========
 const getAllDiscounts = async (req, res) => {
   try {
-    const now = new Date();
     const [discounts] = await Discount.getAll();
+    console.log("Fetched discounts from DB:", discounts);  // Log the result to ensure the DB is returning the data
+    
+    const now = new Date();
+    console.log("Current date:", now);  // Log the current date
+    now.setHours(0, 0, 0, 0);  // Set current time to midnight to only compare the date part
+    console.log('Today (normalized):', now);
+    
     const activeDiscounts = discounts.filter(d => {
       const start = new Date(d.start_date);
+      
       const end = new Date(d.end_date);
+      start.setHours(0, 0, 0, 0);  // Set start date time to midnight
+      end.setHours(23, 59, 59, 999);  // Set end date to the last possible time of the day (23:59:59)
+
+      // 🔍 DEBUG LOGS
+      console.log(`Checking discount: ${d.code}`);
+      console.log('Start:', start, '| End:', end, '| Now:', now);
       return start <= now && end >= now;
     });
-
+    console.log('Active Discounts:', activeDiscounts.map(d => d.code)); // Log active ones
     res.status(200).json(activeDiscounts);
   } catch (error) {
     console.error('Get Discounts Error:', error);
