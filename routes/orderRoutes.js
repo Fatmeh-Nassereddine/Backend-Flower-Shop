@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-  createFullOrder,
+  checkout,
   getAllOrders,
   getUserOrders,
   getOrderItemsByUser,  // Ensure this is included
@@ -23,7 +23,7 @@ const router = express.Router();
 // router.post('/checkout', authenticate, checkout); // Checkout process
 router.get('/my-orders',  authenticate, getUserOrders);  // Get user's orders
 router.get('/my-orderItems',  authenticate,getOrderItemsByUser);  // Get order items for user
-router.post('/', authenticate,createFullOrder);
+router.post('/checkout', authenticate,checkout);
 
 
 

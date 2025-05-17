@@ -127,67 +127,121 @@
 
 
 
-
-
-
 const pool = require('../config/db');
+const User = require('../models/user');
+const Cart = require('../models/cart');
+const CartItem = require('../models/CartItem');
 const Order = require('../models/order');
-const Shipping = require('../models/shipping');
 const OrderItem = require('../models/OrderItem');
 const Product = require('../models/product');
+const Shipping = require('../models/shipping');
+const Address = require('../models/address');
 
-exports.createFullOrder = async (req, res) => {
+exports.checkout = async (req, res) => {
   const connection = await pool.getConnection();
+
   try {
+    const user_id = req.user.id;
+    const { address } = req.body;
+    let shipping_address_id = null;
+
+    // Start transaction
     await connection.beginTransaction();
 
-    const {
-      user_id,
-      shipping_address_id,
-      total_amount,
-      payment_method,
-      delivery_fee,
-      items, // Array of { product_id, quantity, unit_price }
-    } = req.body;
+    // Get or create user's cart
+    const cart = await Cart.getOrCreateCart(user_id);
+    const cartItems = await CartItem.getItems(cart.cart_id);
 
-    // 1. Create the Order
+    if (cartItems.length === 0) {
+      await connection.rollback();
+      return res.status(400).json({ error: 'Cart is empty' });
+    }
+
+    // Create shipping address if provided
+    if (address) {
+      const newAddress = await Address.create({ ...address, user_id });
+      shipping_address_id = newAddress.address_id;
+    }
+
+    // Calculate total amount and prepare order items
+    let totalAmount = 0;
+    const orderItems = [];
+
+    for (const item of cartItems) {
+      const product = await Product.getById(item.product_id);
+
+      if (!product) {
+        await connection.rollback();
+        return res.status(404).json({ error: `Product ID ${item.product_id} not found` });
+      }
+
+      if (product.stock_quantity < item.quantity) {
+        await connection.rollback();
+        return res.status(400).json({ error: `Not enough stock for Product ID ${item.product_id}` });
+      }
+
+      const subtotal = product.price * item.quantity;
+      totalAmount += subtotal;
+
+      orderItems.push({
+        product_id: item.product_id,
+        quantity: item.quantity,
+        unit_price: product.price,
+        subtotal
+      });
+    }
+
+    // Add fixed delivery fee
+    const delivery_fee = 10.0;
+    const shipping_id = await Shipping.create({ delivery_fee, order_id: null }, connection);
+    totalAmount += delivery_fee;
+
+    // Create the order with shipping address
     const order_id = await Order.create(
       user_id,
-      total_amount,
+      totalAmount,
       'pending',
-      payment_method,
+      'Cash on Delivery',
       shipping_address_id,
       connection
     );
 
-    // 2. Create the Shipping
-    await Shipping.create({ delivery_fee, order_id }, connection);
+    // Update the shipping with the order ID
+    await Shipping.update(shipping_id, { order_id }, connection);
 
-    // 3. Create each Order Item
-    for (const item of items) {
-      const { product_id, quantity, unit_price } = item;
+    // Insert order items and update product stock
+    for (const item of orderItems) {
+      await OrderItem.create(order_id, item.product_id, item.quantity, item.unit_price, connection);
 
-      await OrderItem.create(
-        { order_id, product_id, quantity, unit_price, subtotal: quantity * unit_price  },
-        connection
-      );
+      const stockUpdated = await Product.updateStock(item.product_id, item.quantity, connection);
+      if (!stockUpdated) {
+        await connection.rollback();
+        return res.status(409).json({ error: `Stock update failed for product ID ${item.product_id}` });
+      }
     }
 
-    // 4. Commit Transaction
+    // Clear the user's cart
+    await CartItem.clearCart(cart.cart_id);
+
+    // Commit transaction
     await connection.commit();
 
     res.status(201).json({
       message: 'Order placed successfully',
       order_id,
+      total_amount: totalAmount,
+      delivery_fee
     });
+
   } catch (error) {
+    console.error('Checkout Error:', error);
     await connection.rollback();
-    console.error('❌ Transaction failed:', error.message);
-    res.status(500).json({ error: 'Failed to create order' });
+    res.status(500).json({ error: 'Something went wrong during checkout' });
   } finally {
     connection.release();
   }
 };
+
 
 
 
