@@ -168,7 +168,7 @@ exports.createFullOrder = async (req, res) => {
       const { product_id, quantity, unit_price } = item;
 
       await OrderItem.create(
-        { order_id, product_id, quantity, unit_price },
+        { order_id, product_id, quantity, unit_price, subtotal: quantity * unit_price  },
         connection
       );
     }
