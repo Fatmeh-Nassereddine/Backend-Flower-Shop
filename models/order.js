@@ -1,5 +1,4 @@
 const pool = require('../config/db');
-const { v4: uuidv4 } = require('uuid');
 
 class Order {
   static async create(
@@ -11,21 +10,19 @@ class Order {
     connection = null
   ) {
     try {
-      const order_id = uuidv4();
-      const db = connection || pool; // Fallback to pool if no connection is passed
+      const db = connection || pool;
 
-      await db.execute(
-        `INSERT INTO Orders (order_id, user_id, total_amount, status, payment_method, shipping_address_id)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        [order_id, user_id, total_amount, status, payment_method, shipping_address_id]
+      const [result] = await db.execute(
+        `INSERT INTO Orders (user_id, total_amount, status, payment_method, shipping_address_id)
+         VALUES (?, ?, ?, ?, ?)`,
+        [user_id, total_amount, status, payment_method, shipping_address_id]
       );
 
-      return order_id;
+      return result.insertId; // This is the auto-incremented order_id
     } catch (error) {
       throw new Error(`Failed to create order: ${error.message}`);
     }
   }
-  
 
   static async getAll() {
     try {
@@ -38,7 +35,10 @@ class Order {
 
   static async getByUserId(user_id) {
     try {
-      const [orders] = await pool.execute(`SELECT * FROM Orders WHERE user_id = ?`, [user_id]);
+      const [orders] = await pool.execute(
+        `SELECT * FROM Orders WHERE user_id = ?`,
+        [user_id]
+      );
       return orders;
     } catch (error) {
       throw new Error('Failed to get orders for user: ' + error.message);
@@ -47,7 +47,10 @@ class Order {
 
   static async getById(order_id) {
     try {
-      const [order] = await pool.execute(`SELECT * FROM Orders WHERE order_id = ?`, [order_id]);
+      const [order] = await pool.execute(
+        `SELECT * FROM Orders WHERE order_id = ?`,
+        [order_id]
+      );
       return order.length ? order[0] : null;
     } catch (error) {
       throw new Error('Failed to fetch order by ID: ' + error.message);
@@ -68,7 +71,10 @@ class Order {
 
   static async delete(order_id) {
     try {
-      const [result] = await pool.execute(`DELETE FROM Orders WHERE order_id = ?`, [order_id]);
+      const [result] = await pool.execute(
+        `DELETE FROM Orders WHERE order_id = ?`,
+        [order_id]
+      );
       return result.affectedRows > 0;
     } catch (error) {
       throw new Error('Failed to delete order: ' + error.message);

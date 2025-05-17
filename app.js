@@ -63,6 +63,7 @@ const addressRoutes = require('./routes/addressRoutes');
 const favoriteRoutes = require('./routes/favoriteRoutes');
 const authRoutes = require('./routes/authRoutes');
 const testimonialRoutes = require('./routes/testimonialRoutes');
+// const checkoutRoutes = require('./routes/checkoutRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -77,6 +78,7 @@ app.use('/api/contacts', contactRoutes);
 app.use('/api/address', addressRoutes); 
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/testimonial',testimonialRoutes);
+// app.use('/api/checkout', checkoutRoutes); // your checkout route
 
 // ✅ Global Error Handler
 const errorMiddleware = require('./middlewares/error.middleware');

@@ -4,10 +4,10 @@
 const pool = require('../config/db');
 
 class Shipping {
-  // Create a new shipping record
-  static async create({ delivery_fee, order_id }) {
+  static async create({ delivery_fee, order_id }, connection = null) {
     try {
-      const [result] = await pool.execute(
+      const db = connection || pool;  // use transaction if passed, else fallback
+      const [result] = await db.execute(
         'INSERT INTO Shippings (delivery_fee, order_id) VALUES (?, ?)',
         [delivery_fee, order_id]
       );
@@ -16,6 +16,7 @@ class Shipping {
       throw new Error('Error creating shipping: ' + error.message);
     }
   }
+
 
   // Get all shipping records
   static async getAll() {

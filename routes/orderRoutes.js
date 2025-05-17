@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-  checkout,
+  createFullOrder,
   getAllOrders,
   getUserOrders,
   getOrderItemsByUser,  // Ensure this is included
@@ -10,7 +10,8 @@ const {
   updateOrderItem,
   deleteOrderItem,
   updateOrder,
-  getBestSellingProducts
+  getBestSellingProducts,
+  
 } = require('../controllers/orderController');
 
 
@@ -19,9 +20,10 @@ const router = express.Router();
 
 
 // Routes for all authenticated users
-router.post('/checkout', authenticate, checkout); // Checkout process
+// router.post('/checkout', authenticate, checkout); // Checkout process
 router.get('/my-orders',  authenticate, getUserOrders);  // Get user's orders
 router.get('/my-orderItems',  authenticate,getOrderItemsByUser);  // Get order items for user
+router.post('/', authenticate,createFullOrder);
 
 
 
