@@ -132,7 +132,7 @@
 
 const pool = require('../config/db');
 const Order = require('../models/order');
-const Shipping = require('../models/Shipping');
+const Shipping = require('../models/shipping');
 const OrderItem = require('../models/OrderItem');
 const Product = require('../models/product');
 
