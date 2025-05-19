@@ -88,24 +88,29 @@ exports.getMonthlySales = async (req, res) => {
 
 // 4. Get recent N orders (default 5)
 exports.getRecentOrders = async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit, 10) || 5;
-
-    const [rows] = await pool.execute(
-      `SELECT o.order_id, o.order_date, o.total_amount, o.status, u.name AS customer_name
-       FROM Orders o
-       LEFT JOIN Users u ON o.user_id = u.id
-       ORDER BY o.order_date DESC
-       LIMIT ?`,
-      [limit]
-    );
-
-    res.status(200).json({ recentOrders: rows });
-  } catch (error) {
-    console.error('Recent Orders Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+    try {
+      const limit = Number(req.query.limit) || 5;
+  
+      if (isNaN(limit)) {
+        return res.status(400).json({ error: 'Invalid limit value' });
+      }
+  
+      const [rows] = await pool.query(
+        `SELECT o.order_id, o.order_date, o.total_amount, o.status, u.name AS customer_name
+         FROM Orders o
+         LEFT JOIN Users u ON o.user_id = u.id
+         ORDER BY o.order_date DESC
+         LIMIT ?`,
+        [limit]
+      );
+  
+      res.status(200).json({ recentOrders: rows });
+    } catch (error) {
+      console.error('Recent Orders Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  
 
 // 5. Get low stock products (threshold default 5)
 exports.getLowStockProducts = async (req, res) => {
@@ -130,25 +135,30 @@ exports.getLowStockProducts = async (req, res) => {
 
 // 6. Get top favorited products (default top 5)
 exports.getTopFavoritedProducts = async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit, 10) || 5;
-
-    const [rows] = await pool.execute(
-      `SELECT p.product_id, p.name, COUNT(f.id) AS favorites_count
-       FROM Favorites f
-       JOIN Products p ON f.product_id = p.product_id
-       GROUP BY p.product_id
-       ORDER BY favorites_count DESC
-       LIMIT ?`,
-      [limit]
-    );
-
-    res.status(200).json({ topFavoritedProducts: rows });
-  } catch (error) {
-    console.error('Top Favorited Products Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+    try {
+      const limit = Number(req.query.limit) || 5;
+  
+      if (isNaN(limit)) {
+        return res.status(400).json({ error: 'Invalid limit value' });
+      }
+  
+      const [rows] = await pool.query(
+        `SELECT p.product_id, p.name, COUNT(f.id) AS favorites_count
+         FROM Favorites f
+         JOIN Products p ON f.product_id = p.product_id
+         GROUP BY p.product_id
+         ORDER BY favorites_count DESC
+         LIMIT ?`,
+        [limit]
+      );
+  
+      res.status(200).json({ topFavoritedProducts: rows });
+    } catch (error) {
+      console.error('Top Favorited Products Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  
 
 // 7. Get active discounts list
 exports.getActiveDiscounts = async (req, res) => {
