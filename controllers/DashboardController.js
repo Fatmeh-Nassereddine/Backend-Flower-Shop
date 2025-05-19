@@ -178,20 +178,19 @@ exports.getActiveDiscounts = async (req, res) => {
 
 // 8. Get recent contact messages (default 5)
 exports.getRecentContacts = async (req, res) => {
-  try {
-    const limit = parseInt(req.query.limit, 10) || 5;
-
-    const [rows] = await pool.execute(
-      `SELECT id, first_name, email, subject, message
-       FROM Contacts
-       ORDER BY id DESC
-       LIMIT ?`,
-      [limit]
-    );
-
-    res.status(200).json({ recentContacts: rows });
-  } catch (error) {
-    console.error('Recent Contacts Error:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
+    try {
+      const limit = parseInt(req.query.limit, 10) || 5;
+  
+      const [rows] = await pool.execute(
+        `SELECT id, first_name, email, subject, message
+         FROM Contacts
+         ORDER BY id DESC
+         LIMIT ${limit}`
+      );
+  
+      res.status(200).json({ recentContacts: rows });
+    } catch (error) {
+      console.error('🔥 Recent Contacts Error:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
