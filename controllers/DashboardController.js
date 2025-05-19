@@ -115,7 +115,9 @@ exports.getRecentOrders = async (req, res) => {
 // 5. Get low stock products (threshold default 5)
 exports.getLowStockProducts = async (req, res) => {
   try {
+    console.log('Threshold query param:', req.query.threshold);
     const threshold = parseInt(req.query.threshold, 10) || 5;
+    console.log('Parsed threshold:', threshold);
 
     const [rows] = await pool.execute(
       `SELECT p.product_id, p.name, p.stock_quantity, c.name AS category_name
@@ -125,6 +127,8 @@ exports.getLowStockProducts = async (req, res) => {
        ORDER BY p.stock_quantity ASC`,
       [threshold]
     );
+
+    console.log('Query returned rows:', rows);
 
     res.status(200).json({ lowStockProducts: rows });
   } catch (error) {
