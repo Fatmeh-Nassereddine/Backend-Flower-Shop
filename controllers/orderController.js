@@ -296,23 +296,26 @@ exports.getOrderItems = async (req, res) => {
 exports.getOrderItemsByUser = async (req, res) => {
   const user_id = req.user.id;
   try {
-    const [orders] = await pool.execute(
-      `SELECT * FROM Orders WHERE user_id = ? ORDER BY order_date DESC`,
+    const [items] = await pool.execute(
+      `SELECT 
+        oi.order_item_id, 
+        oi.quantity, 
+        oi.unit_price, 
+        oi.subtotal, 
+        p.product_id, 
+        p.name AS productName,
+        oi.order_id  -- Add this to link to the order
+       FROM OrderItems oi
+       JOIN Products p ON oi.product_id = p.product_id
+       JOIN Orders o ON oi.order_id = o.order_id
+       WHERE o.user_id = ?
+       ORDER BY o.order_date DESC`,
       [user_id]
     );
-    for (const order of orders) {
-      const [items] = await pool.execute(
-        `SELECT oi.*, p.name, p.price
-           FROM OrderItems oi
-           JOIN Products p ON oi.product_id = p.product_id
-           WHERE oi.order_id = ?`,
-        [order.order_id]
-      );
-      order.items = items;
-    }
-    res.json({ orders });
+
+    res.json(items);  // ✅ Return a flat array of order items
   } catch (error) {
-    console.error(`Error fetching order history for user ${user_id}:`, error);
+    console.error(`Error fetching order items for user ${user_id}:`, error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

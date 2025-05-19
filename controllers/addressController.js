@@ -4,13 +4,13 @@ const Address = require('../models/address');
 
 exports.createAddress = async (req, res) => {
   try {
-      const { street_address, city, governorate, phone_number, user_id } = req.body;
+      const { street_address, city, governorate, phone_number, user_id  } = req.body;
 
-      if (!street_address || !city || !governorate || !user_id) {
+      if (!street_address ||!city  || !governorate  || !user_id) {
           return res.status(400).json({ error: 'Missing required fields' });
       }
 
-      const result = await Address.create({ street_address, city, governorate, phone_number, user_id });
+      const result = await Address.create({ street_address, city, governorate, phone_number, user_id  });
     // Ensure result includes insertId (assuming MySQL or similar)
     if (result) {
       console.log('Address created, insertId:', result.insertId); // Log the insertId

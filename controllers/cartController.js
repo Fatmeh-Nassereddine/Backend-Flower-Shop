@@ -173,12 +173,12 @@ exports.getUserCart = async (req, res) => {
       return res.status(400).json({ error: "Invalid user ID" });
     }
 
-    let cart = await Cart.getCartByUser(user_id);
+    let cart = await Cart.getOrCreateCart(user_id);
 
-    if (!cart) {
-      const newCart = await Cart.createCart(user_id);
-      return res.json({ cart_id: newCart.cart_id, items: [], total: 0 });
-    }
+    // if (!cart) {
+    //   const newCart = await Cart.createCart(user_id);
+    //   return res.json({ cart_id: newCart.cart_id, items: [], total: 0 });
+    // }
 
     const items = await CartItem.getItems(cart.cart_id);
     const total = items.reduce((acc, item) => acc + (item.subtotal || 0), 0);
