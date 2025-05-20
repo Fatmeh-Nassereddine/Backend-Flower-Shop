@@ -33,5 +33,30 @@ ${message}
   }
 };
 
-module.exports = { sendContactNotification };
+
+const sendCancelEmail = async (toEmail, subscriptionId) => {
+  try {
+    const info = await transporter.sendMail({
+      from: '"Flower Shop" <no-reply@example.com>',  // Sender
+      to: toEmail,                                   // Recipient (the user)
+      subject: 'Subscription Cancellation Confirmation',
+      text: `Hello,
+
+Your subscription with ID ${subscriptionId} has been successfully cancelled.
+
+We hope to see you back soon!
+
+Best regards,
+Flower Shop Team`
+    });
+
+    console.log(`Cancellation email sent to ${toEmail}:`, info.messageId);
+  } catch (error) {
+    console.error('Failed to send cancellation email:', error.message);
+  }
+};
+
+module.exports = { sendContactNotification, sendCancelEmail };
+
+
 
