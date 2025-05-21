@@ -38,6 +38,7 @@ exports.deleteTestimonial = async (req, res) => {
     await Testimonial.deleteTestimonial(id);
     res.status(200).json({ message: 'Testimonial deleted successfully' });
   } catch (error) {
+    console.error('Delete testimonial error:', error);  // Add this line for debugging
     handleError(res, error, 'Failed to delete testimonial');
   }
 };
