@@ -43,7 +43,7 @@ const getUserSubscriptions = async (req, res) => {
 // Cancel a subscription
 const cancelSubscription = async (req, res) => {
   const user_id = req.user.id;
-  const subscription_id = req.params.id.subscription_id;
+  const subscription_id = req.params.subscription_id;
 
   try {
     // Check subscription belongs to user
