@@ -5,10 +5,10 @@ class Testimonial {
   static async getAllTestimonials() {
     try {
       const [rows] = await pool.query(`
-        SELECT t.quote, u.name, t.created_at
-        FROM Testimonials t
-        JOIN Users u ON t.user_id = u.id
-        ORDER BY t.created_at DESC
+        SELECT t.id AS testimonial_id, t.quote, u.name, t.created_at
+      FROM Testimonials AS t
+      JOIN Users AS u ON t.user_id = u.id
+      ORDER BY t.created_at DESC
       `);
       return rows;
     } catch (error) {
@@ -25,7 +25,7 @@ class Testimonial {
         [user_id, quote]
       );
       return {
-        id: result.insertId,
+        testimonial_id: result.insertId, // Also alias here for consistency
         user_id,
         quote,
       };
