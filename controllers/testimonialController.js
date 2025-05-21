@@ -28,17 +28,17 @@ exports.createTestimonial = async (req, res) => {
 
 
 exports.deleteTestimonial = async (req, res) => {
-  const { id } = req.params;
+  const { testimonial_id } = req.params;
 
-  if (!id) {
+  if (!testimonial_id) {
     return res.status(400).json({ message: 'Missing testimonial ID' });
   }
 
   try {
-    await Testimonial.deleteTestimonial(id);
+    await Testimonial.deleteTestimonial(testimonial_id);
     res.status(200).json({ message: 'Testimonial deleted successfully' });
   } catch (error) {
-    console.error('Delete testimonial error:', error);  // Add this line for debugging
+    console.error('Delete testimonial error:', error);
     handleError(res, error, 'Failed to delete testimonial');
   }
 };

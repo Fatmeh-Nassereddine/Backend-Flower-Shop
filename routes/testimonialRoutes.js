@@ -14,6 +14,6 @@ router.get('/', getTestimonials);
 
 // Protected route (assuming auth middleware sets req.user)
 router.post('/', authenticate, createTestimonial);
-router.delete('/:id', authenticate, authorizeAdmin, deleteTestimonial);
+router.delete('/:testimonial_id', authenticate, authorizeAdmin, deleteTestimonial);
 
 module.exports = router;
