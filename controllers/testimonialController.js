@@ -4,6 +4,7 @@ const handleError = require('../utils/handleError');
 exports.getTestimonials = async (req, res) => {
   try {
     const testimonials = await Testimonial.getAllTestimonials();
+    console.log("Sending testimonials:", testimonials);  // Log the data before sending response
     res.json(testimonials);
   } catch (error) {
     handleError(res, error, 'Failed to fetch testimonials');

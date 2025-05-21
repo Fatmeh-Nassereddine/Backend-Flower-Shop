@@ -10,6 +10,7 @@ class Testimonial {
       JOIN Users AS u ON t.user_id = u.id
       ORDER BY t.created_at DESC
       `);
+      console.log("Testimonials fetched:", rows);  // Log the rows to check the result
       return rows;
     } catch (error) {
       console.error('❌ Error fetching testimonials:', error);
