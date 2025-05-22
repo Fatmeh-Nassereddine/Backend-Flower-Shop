@@ -65,6 +65,7 @@ const authRoutes = require('./routes/authRoutes');
 const testimonialRoutes = require('./routes/testimonialRoutes');
 const dashboardRoutes = require ('./routes/dashboardRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
+const notificationRoutes = require('./routes/notificationsRoutes');
 
 
 
@@ -83,6 +84,7 @@ app.use('/api/favorites', favoriteRoutes);
 app.use('/api/testimonial',testimonialRoutes);
 app.use ('/api/dashboard',dashboardRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 // ✅ Global Error Handler
