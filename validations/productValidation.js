@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 // Define the schema for the Product
 const productSchema = Joi.object({
-  product_id: Joi.string().uuid().required(), // Ensure product_id is a valid UUID
+  product_id: Joi.string().uuid().optional(), // Ensure product_id is a valid UUID
   name: Joi.string().min(3).max(100).required(), // Name must be between 3 and 100 characters
   description: Joi.string().max(500), // Optional, max length 500 characters
   price: Joi.number().greater(0).required(), // Price must be a positive number
