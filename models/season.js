@@ -71,16 +71,24 @@ class Season {
 
   // Method to delete a season by its ID
   static async delete(season_id) {
+    if (!season_id) {
+      throw new Error("Season ID is undefined");
+    }
+  
     try {
-      const [season] = await pool.execute('SELECT * FROM Seasons WHERE season_id = ?', [season_id]);
-      if (!season || season.length === 0) throw new Error('Season not found');
-
+      const [rows] = await pool.execute('SELECT * FROM Seasons WHERE season_id = ?', [season_id]);
+  
+      if (!rows || rows.length === 0) {
+        throw new Error('Season not found');
+      }
+  
       const [result] = await pool.execute('DELETE FROM Seasons WHERE season_id = ?', [season_id]);
       return result;
     } catch (error) {
       throw new Error('Error deleting season: ' + error.message);
     }
   }
+  
 }
 
 module.exports = Season;

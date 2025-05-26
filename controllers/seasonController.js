@@ -53,6 +53,12 @@ exports.deleteSeason = async (req, res) => {
   try {
     const { id } = req.params;
 
+    if (!id) {
+      return res.status(400).json({ message: 'Missing season ID in request params' });
+    }
+
+    console.log("Deleting season with ID:", id); // ✅ log to trace
+
     const existingSeason = await Season.findById(id);
     if (!existingSeason) {
       return res.status(404).json({ message: 'Season not found' });
@@ -61,10 +67,11 @@ exports.deleteSeason = async (req, res) => {
     await Season.delete(id);
     res.status(200).json({ message: 'Season deleted successfully' });
   } catch (error) {
-    console.error(error);
+    console.error("Error in deleteSeason controller:", error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 // Customer: Get all seasons
 exports.viewAllSeasons = async (req, res) => {
