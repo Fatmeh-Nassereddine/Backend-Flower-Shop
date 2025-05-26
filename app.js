@@ -38,7 +38,7 @@ app.use(cors({
 }));
 
 // Explicitly handle the OPTIONS preflight request
-app.options('*', cors());
+app.options('*', cors(corsOptions));
 
 
 // ✅ Security, Logging, Parsing
