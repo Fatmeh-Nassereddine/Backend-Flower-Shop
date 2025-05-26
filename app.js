@@ -21,12 +21,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ✅ Correct CORS Configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
-app.use(cors({
+// ✅ Define CORS options separately so it can be reused
+const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or Postman)
     if (!origin) return callback(null, true);
-
-    // Check if the origin is in the allowed list
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
@@ -34,11 +32,13 @@ app.use(cors({
       return callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true,  // Allow cookies and authentication headers
-}));
+  credentials: true,
+};
 
-// Explicitly handle the OPTIONS preflight request
+// ✅ Use corsOptions in both places
+app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
 
 
 // ✅ Security, Logging, Parsing
