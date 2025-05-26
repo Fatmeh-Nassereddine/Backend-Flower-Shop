@@ -687,7 +687,15 @@ const getProductById = async (req, res) => {
 
 // ADD product
 const addProduct = async (req, res) => {
-  const { error } = productSchema.validate(req.body, { abortEarly: false });
+  // Convert fields from strings to correct types (because they come from multipart/form-data)
+if (req.body.price) req.body.price = parseFloat(req.body.price);
+if (req.body.stock_quantity) req.body.stock_quantity = parseInt(req.body.stock_quantity);
+if (req.body.is_seasonal !== undefined) req.body.is_seasonal = parseInt(req.body.is_seasonal);
+if (req.body.is_featured !== undefined) req.body.is_featured = parseInt(req.body.is_featured);
+  const { error } = productSchema.validate(req.body, { abortEarly: false,
+    allowUnknown: false // Don't allow unspecified fields
+
+   });
   if (error) {
     return res.status(400).json({
       data: null,
@@ -814,7 +822,7 @@ const deleteProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const [images] = await pool.query('SELECT public_id FROM images WHERE product_id = ?', [productId]);
+    const [images] = await pool.query('SELECT public_id FROM Images WHERE product_id = ?', [productId]);
 
     for (const img of images) {
       if (img.public_id) {
@@ -822,7 +830,7 @@ const deleteProduct = async (req, res) => {
       }
     }
 
-    await pool.query('DELETE FROM images WHERE product_id = ?', [productId]);
+    await pool.query('DELETE FROM Images WHERE product_id = ?', [productId]);
     await Product.delete(productId);
 
     res.status(200).json({ message: 'Product and images deleted successfully' });
