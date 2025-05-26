@@ -104,8 +104,15 @@ const getCategoryById = async (req, res) => {
 // Update Category
 const updateCategory = async (req, res) => {
     try {
-        const { name, description, parent_category_id } = req.body;
+        // const { name, description, parent_category_id } = req.body;
         const categoryId = req.params.category_id;
+        // ✅ Log request body for debugging
+    console.log('Incoming form data:', req.body);
+
+    // Extract fields from form data (parsed by multer)
+    const name = req.body.name || null;
+    const description = req.body.description || null;
+    const parent_category_id = req.body.parent_category_id || null;
 
         const existingCategory = await Category.findById(categoryId);
         if (!existingCategory) {
