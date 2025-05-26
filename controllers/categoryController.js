@@ -160,7 +160,7 @@ const deleteCategory = async (req, res) => {
       }
   
       // Delete images related to this category first
-      await pool.query('DELETE FROM images WHERE category_id = ?', [categoryId]);
+      await pool.query('DELETE FROM Images WHERE category_id = ?', [categoryId]);
   
       // Then delete the category itself
       await Category.delete(categoryId);
